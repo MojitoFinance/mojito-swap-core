@@ -86,10 +86,13 @@ describe('MojitoFactory', () => {
 
   it('set:SwapFeeNumerator:FeeToDenominator', async () => {
     await createPair(TEST_ADDRESSES)
-    await expect(factory.connect(other).setSwapFeeNumerator(await factory.allPairs(0), 25)).to.be.revertedWith('Mojito: FORBIDDEN')
+    await expect(factory.connect(other).setSwapFeeNumerator(await factory.allPairs(0), 25)).to.be.revertedWith(
+      'Mojito: FORBIDDEN'
+    )
     factory.setSwapFeeNumerator(await factory.allPairs(0), 25)
-
-    await expect(factory.connect(other).setFeeToDenominator(await factory.allPairs(0), 0)).to.be.revertedWith('Mojito: FORBIDDEN')
+    await expect(factory.connect(other).setFeeToDenominator(await factory.allPairs(0), 0)).to.be.revertedWith(
+      'Mojito: FORBIDDEN'
+    )
     factory.setFeeToDenominator(await factory.allPairs(0), 0)
   })
 })
