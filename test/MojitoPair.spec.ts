@@ -177,7 +177,7 @@ describe('MojitoPair', () => {
     await mineBlock(provider, (await provider.getBlock('latest')).timestamp + 1)
     const tx = await pair.swap(expectedOutputAmount, 0, wallet.address, '0x', overrides)
     const receipt = await tx.wait()
-    expect(receipt.gasUsed).to.eq(73462)
+    expect(receipt.gasUsed).to.eq(75080)
   })
 
   it('burn', async () => {
@@ -280,5 +280,13 @@ describe('MojitoPair', () => {
     // ...because the initial liquidity amounts were equal
     expect(await token0.balanceOf(pair.address)).to.eq(bigNumberify(1000).add('249501683697445'))
     expect(await token1.balanceOf(pair.address)).to.eq(bigNumberify(1000).add('250000187312969'))
+  })
+
+  it('swapFeeNumerator', async () => {
+    expect(await pair.swapFeeNumerator()).to.eq(bigNumberify(30))
+  })
+
+  it('feeToDenominator', async () => {
+    expect(await pair.feeToDenominator()).to.eq(bigNumberify(5))
   })
 })

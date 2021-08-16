@@ -27,6 +27,9 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
     uint public price1CumulativeLast;
     uint public kLast; // reserve0 * reserve1, as of immediately after the most recent liquidity event
 
+    uint public swapFeeNumerator = 30; // uses 0.3% by default
+    uint public feeToDenominator = 5;  // uses 1/6th by from swap fee default
+
     uint private unlocked = 1;
     modifier lock() {
         require(unlocked == 1, 'Mojito: LOCKED');
@@ -69,6 +72,19 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
         token1 = _token1;
     }
 
+    // called by the factory at time after deployment
+    function setSwapFeeNumerator(uint _swapFeeNumerator) external {
+        require(msg.sender == factory, 'Mojito: FORBIDDEN'); // sufficient check
+        require(_swapFeeNumerator <= 10000, 'Mojito: OVERFLOW');
+        swapFeeNumerator = _swapFeeNumerator;
+    }
+
+    // called by the factory at time after deployment
+    function setFeeToDenominator(uint _feeToDenominator) external {
+        require(msg.sender == factory, 'Mojito: FORBIDDEN'); // sufficient check
+        feeToDenominator = _feeToDenominator;
+    }
+
     // update reserves and, on the first call per block, price accumulators
     function _update(uint balance0, uint balance1, uint112 _reserve0, uint112 _reserve1) private {
         require(balance0 <= uint112(-1) && balance1 <= uint112(-1), 'Mojito: OVERFLOW');
@@ -85,7 +101,7 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
         emit Sync(reserve0, reserve1);
     }
 
-    // if fee is on, mint liquidity equivalent to 1/6th of the growth in sqrt(k)
+    // if fee is on, mint liquidity equivalent to 1/(feeToDenominator)th of the growth in sqrt(k)
     function _mintFee(uint112 _reserve0, uint112 _reserve1) private returns (bool feeOn) {
         address feeTo = IMojitoFactory(factory).feeTo();
         feeOn = feeTo != address(0);
@@ -96,7 +112,7 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
                 uint rootKLast = Math.sqrt(_kLast);
                 if (rootK > rootKLast) {
                     uint numerator = totalSupply.mul(rootK.sub(rootKLast));
-                    uint denominator = rootK.mul(5).add(rootKLast);
+                    uint denominator = rootK.mul(feeToDenominator).add(rootKLast);
                     uint liquidity = numerator / denominator;
                     if (liquidity > 0) _mint(feeTo, liquidity);
                 }
@@ -177,9 +193,9 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
         uint amount1In = balance1 > _reserve1 - amount1Out ? balance1 - (_reserve1 - amount1Out) : 0;
         require(amount0In > 0 || amount1In > 0, 'Mojito: INSUFFICIENT_INPUT_AMOUNT');
         { // scope for reserve{0,1}Adjusted, avoids stack too deep errors
-        uint balance0Adjusted = balance0.mul(1000).sub(amount0In.mul(3));
-        uint balance1Adjusted = balance1.mul(1000).sub(amount1In.mul(3));
-        require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(1000**2), 'Mojito: K');
+        uint balance0Adjusted = balance0.mul(10000).sub(amount0In.mul(swapFeeNumerator));
+        uint balance1Adjusted = balance1.mul(10000).sub(amount1In.mul(swapFeeNumerator));
+        require(balance0Adjusted.mul(balance1Adjusted) >= uint(_reserve0).mul(_reserve1).mul(10000**2), 'Mojito: K');
         }
 
         _update(balance0, balance1, _reserve0, _reserve1);

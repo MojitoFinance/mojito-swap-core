@@ -1,6 +1,6 @@
 # Mojito
 
-[![Actions Status](https://github.com/mojito-finance/mojito-swap-core/workflows/CI/badge.svg)](https://github.com/mojito-finance/mojito-swap-core/actions)
+[![Actions Status](https://github.com/MojitoFinance/mojito-swap-core/workflows/CI/badge.svg)](https://github.com/MojitoFinance/mojito-swap-core/actions)
 
 In-depth documentation on MojitoSwap is available at [docs.mojitoswap.finance](https://docs.mojitoswap.finance/).
 

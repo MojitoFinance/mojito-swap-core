@@ -48,4 +48,14 @@ contract MojitoFactory is IMojitoFactory {
         require(msg.sender == feeToSetter, 'Mojito: FORBIDDEN');
         feeToSetter = _feeToSetter;
     }
+
+    function setSwapFeeNumerator(address _pair, uint _swapFeeNumerator) external {
+        require(msg.sender == feeToSetter, 'Mojito: FORBIDDEN');
+        IMojitoPair(_pair).setSwapFeeNumerator(_swapFeeNumerator);
+    }
+
+    function setFeeToDenominator(address _pair, uint _feeToDenominator) external {
+        require(msg.sender == feeToSetter, 'Mojito: FORBIDDEN');
+        IMojitoPair(_pair).setFeeToDenominator(_feeToDenominator);
+    }
 }

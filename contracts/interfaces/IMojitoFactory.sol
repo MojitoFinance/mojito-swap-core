@@ -14,4 +14,7 @@ interface IMojitoFactory {
 
     function setFeeTo(address) external;
     function setFeeToSetter(address) external;
+
+    function setSwapFeeNumerator(address _pair, uint _swapFeeNumerator) external;
+    function setFeeToDenominator(address _pair, uint _feeToDenominator) external;
 }

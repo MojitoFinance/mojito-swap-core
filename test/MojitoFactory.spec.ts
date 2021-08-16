@@ -68,7 +68,7 @@ describe('MojitoFactory', () => {
   it('createPair:gas', async () => {
     const tx = await factory.createPair(...TEST_ADDRESSES)
     const receipt = await tx.wait()
-    expect(receipt.gasUsed).to.eq(2508306)
+    expect(receipt.gasUsed).to.eq(2655533)
   })
 
   it('setFeeTo', async () => {
@@ -82,5 +82,14 @@ describe('MojitoFactory', () => {
     await factory.setFeeToSetter(other.address)
     expect(await factory.feeToSetter()).to.eq(other.address)
     await expect(factory.setFeeToSetter(wallet.address)).to.be.revertedWith('Mojito: FORBIDDEN')
+  })
+
+  it('set:SwapFeeNumerator:FeeToDenominator', async () => {
+    await createPair(TEST_ADDRESSES)
+    await expect(factory.connect(other).setSwapFeeNumerator(await factory.allPairs(0), 25)).to.be.revertedWith('Mojito: FORBIDDEN')
+    factory.setSwapFeeNumerator(await factory.allPairs(0), 25)
+
+    await expect(factory.connect(other).setFeeToDenominator(await factory.allPairs(0), 0)).to.be.revertedWith('Mojito: FORBIDDEN')
+    factory.setFeeToDenominator(await factory.allPairs(0), 0)
   })
 })
