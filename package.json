@@ -5,7 +5,7 @@
   "homepage": "https://mojitoswap.finance",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mojito-finance/mojito-swap-core.git"
+    "url": "https://github.com/MojitoFinance/mojito-swap-core.git"
   },
   "files": [
     "contracts",
