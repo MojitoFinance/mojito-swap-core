@@ -82,7 +82,7 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
     // called by the factory at time after deployment
     function setFeeToDenominator(uint _feeToDenominator) external {
         require(msg.sender == factory, 'Mojito: FORBIDDEN'); // sufficient check
-        require(_feeToDenominator >= 2, 'Mojito: OVERFLOW2');
+        require(_feeToDenominator >= 2, 'Mojito: INSUFFICIENT');
         feeToDenominator = _feeToDenominator;
     }
 
