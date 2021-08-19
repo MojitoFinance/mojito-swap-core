@@ -28,7 +28,7 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
     uint public kLast; // reserve0 * reserve1, as of immediately after the most recent liquidity event
 
     uint public swapFeeNumerator = 30; // uses 0.3% by default
-    uint public feeToDenominator = 5;  // uses 1/6th by from swap fee default
+    uint public feeToDenominator = 5;  // uses 2/5th by from swap fee default
 
     uint private unlocked = 1;
     modifier lock() {
@@ -82,6 +82,7 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
     // called by the factory at time after deployment
     function setFeeToDenominator(uint _feeToDenominator) external {
         require(msg.sender == factory, 'Mojito: FORBIDDEN'); // sufficient check
+        require(_feeToDenominator >= 2, 'Mojito: OVERFLOW2');
         feeToDenominator = _feeToDenominator;
     }
 
@@ -101,7 +102,7 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
         emit Sync(reserve0, reserve1);
     }
 
-    // if fee is on, mint liquidity equivalent to 1/(feeToDenominator)th of the growth in sqrt(k)
+    // if fee is on, mint liquidity equivalent to 2/(feeToDenominator)th of the growth in sqrt(k)
     function _mintFee(uint112 _reserve0, uint112 _reserve1) private returns (bool feeOn) {
         address feeTo = IMojitoFactory(factory).feeTo();
         feeOn = feeTo != address(0);
@@ -111,8 +112,8 @@ contract MojitoPair is IMojitoPair, MojitoERC20 {
                 uint rootK = Math.sqrt(uint(_reserve0).mul(_reserve1));
                 uint rootKLast = Math.sqrt(_kLast);
                 if (rootK > rootKLast) {
-                    uint numerator = totalSupply.mul(rootK.sub(rootKLast));
-                    uint denominator = rootK.mul(feeToDenominator).add(rootKLast);
+                    uint numerator = totalSupply.mul(rootK.sub(rootKLast)).mul(2);
+                    uint denominator = rootK.mul(feeToDenominator.sub(2)).add(rootKLast.mul(2));
                     uint liquidity = numerator / denominator;
                     if (liquidity > 0) _mint(feeTo, liquidity);
                 }
