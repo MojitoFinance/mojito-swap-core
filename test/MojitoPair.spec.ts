@@ -258,7 +258,7 @@ describe('MojitoPair', () => {
 
   it('feeTo:on', async () => {
     await factory.setFeeTo(other.address)
-    await factory.setFeeToDenominator(pair.address,12)
+    await factory.setFeeToDenominator(pair.address, 12)
 
     const token0Amount = expandTo18Decimals(1000)
     const token1Amount = expandTo18Decimals(1000)
