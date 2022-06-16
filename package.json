@@ -1,7 +1,7 @@
 {
   "name": "@mojitoswap-libs/mojito-swap-core",
   "description": "🎛 Core contracts for the mojito protocol",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "homepage": "https://mojitoswap.finance",
   "repository": {
     "type": "git",
